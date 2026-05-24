@@ -1,0 +1,74 @@
+{
+    "device": "KOSTAL PIKO5.5",
+    "deviceid": "PIKO5.5",
+    "date": "2026-05-24",
+    "time": "10:06",
+    "current_power": 1409.0,
+    "current_power_kw": 1.41,
+    "total_energy": 50933.0,
+    "daily_energy": 2.73,
+    "total": {
+        "power_hour": 0.24,
+        "power_day": 2.73,
+        "power_week": 111.72,
+        "power_month": 392.58,
+        "power_year": 507.15,
+        "last_update": "2026-05-24T10:06:50"
+    },
+    "generator": {
+        "string1_voltage": 511.0,
+        "output_l1_voltage": 232.0,
+        "string1_ampere": 2.74,
+        "l1_power": 477.0,
+        "string2_voltage": 242.0,
+        "output_l2_voltage": 231.0,
+        "string2_ampere": 0.39,
+        "l2_power": 470.0,
+        "string3_voltage": 0.0,
+        "output_l3_voltage": 230.0,
+        "string3_ampere": 0.0,
+        "l3_power": 462.0,
+        "powerfactor_l1": 0.75,
+        "powerfactor_l2": 5.217,
+        "powerfactor_l3": 0.0,
+        "powerfactor": 2.983,
+        "gesamtleistung": 1409.0
+    },
+    "aktiv": "on",
+    "mode": "Einspeisen MPP",
+    "icon": "mdi:solar-power",
+    "week": "2026W21",
+    "month": "2026-05",
+    "year": "2026",
+    "last_update": "2026-05-24T08:06:50+00:00",
+    "appversion": "2.1.0",
+    "dataservice": "docker-services.home-picokostal",
+    "runningtime": {
+        "running": "4709 days, 19 hours, 6 minutes and 50 seconds",
+        "days": 4709,
+        "hours": 113035
+    },
+    "power": {
+        "theoretical": {
+            "pv_ost": 0.663,
+            "pv_west": 2.15,
+            "total": 2.814,
+            "solar_time": 0.2442,
+            "solar_factor_ost": 0.2916,
+            "solar_factor_west": 0.9453,
+            "sunrise": "2026-05-24T06:22:00+02:00",
+            "sunset": "2026-05-24T21:37:00+02:00",
+            "daily_energy_kWh": 41.75,
+            "daylight_hours": 15.25,
+            "eta": 0.91
+        },
+        "actual": {
+            "pv_ost": 1400.14,
+            "pv_west": 94.38,
+            "total": 1494.52
+        }
+    },
+    "power_factor_theoretical": 0.5,
+    "periode": "2026-05-24",
+    "timestamp": "2026-05-24T08:06:50+00:00"
+}
