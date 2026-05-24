@@ -1,0 +1,13 @@
+[project]
+name = "hc_pico"
+version = "2.1.0"
+requires-python = ">=3.12"
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+extend-exclude = ["testcase", "scripts"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+ignore = ["E501"]

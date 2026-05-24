@@ -1,0 +1,247 @@
+devices:
+
+  kostaldata:
+    devicename: "Kostal Piko 5.5 Inverter"
+    items:
+      binary_sensor:
+        - name: Wechselrichter Aktiv
+          json_key: aktiv
+          pl_on: "on"
+          pl_off: "off"
+          dev_cla: running
+          ic: mdi:power
+
+      sensor:
+        - name: PV Betriebsmode
+          json_key: mode
+          ic: mdi:sun-clock
+
+        - name: PV Leistung aktuell
+          json_key: current_power_kw
+          unit_of_meas: "kW"
+          dev_cla: power
+          ic: mdi:solar-power
+
+        - name: PV Leistung Watt
+          json_key: current_power
+          unit_of_meas: "W"
+          dev_cla: power
+          ic: mdi:solar-power
+
+        - name: PV Energie total
+          json_key: total_energy
+          unit_of_meas: "kWh"
+          dev_cla: energy
+          state_cla: total_increasing
+          ic: mdi:solar-power
+
+        - name: PV Energie heute
+          json_key: daily_energy
+          unit_of_meas: "kWh"
+          dev_cla: energy
+          state_cla: total_increasing
+          ic: mdi:solar-power
+
+        - name: PV Energie Stunde
+          json_key: total_power_hour
+          unit_of_meas: "kWh"
+          dev_cla: energy
+          state_cla: total_increasing
+          ic: mdi:solar-power
+
+        - name: PV Energie Tag
+          json_key: total_power_day
+          unit_of_meas: "kWh"
+          dev_cla: energy
+          state_cla: total_increasing
+          ic: mdi:solar-power
+
+        - name: PV Energie Woche
+          json_key: total_power_week
+          unit_of_meas: "kWh"
+          dev_cla: energy
+          state_cla: total_increasing
+          ic: mdi:solar-power
+
+        - name: PV Energie Monat
+          json_key: total_power_month
+          unit_of_meas: "kWh"
+          dev_cla: energy
+          state_cla: total_increasing
+          ic: mdi:solar-power
+
+        - name: PV Energie Jahr
+          json_key: total_power_year
+          unit_of_meas: "kWh"
+          dev_cla: energy
+          state_cla: total_increasing
+          ic: mdi:solar-power
+
+        - name: PV Leistungsfaktor
+          json_key: power_factor_theoretical
+          ic: mdi:percent
+
+        - name: Letztes Update
+          json_key: last_update
+          ic: mdi:clock
+          ent_cat: "diagnostic"
+          dev_cla: timestamp
+
+        - name: Dataservice
+          json_key: dataservice
+          ic: mdi:server
+          ent_cat: "diagnostic"
+
+        - name: Betriebsdauer Stunden
+          json_key: runningtime_hours
+          unit_of_meas: "h"
+          ic: mdi:clock
+          ent_cat: "diagnostic"
+
+    device:
+      identifiers: ["kostalp"]
+      name: "Photovoltaik Anlage"
+      model: "Piko 5.5"
+      manufacturer: "Kostal"
+      sw_version: "2.0.0"
+      configuration_url: "http://10.1.1.80"
+
+  paneldata:
+    devicename: "PV Generator"
+    items:
+      sensor:
+        - name: String 1 Spannung DC
+          json_key: generator_string1_voltage
+          unit_of_meas: "V"
+          ic: mdi:flash
+
+        - name: String 2 Spannung DC
+          json_key: generator_string2_voltage
+          unit_of_meas: "V"
+          ic: mdi:flash
+
+        - name: String 3 Spannung DC
+          json_key: generator_string3_voltage
+          unit_of_meas: "V"
+          ic: mdi:flash
+
+        - name: String 1 Strom
+          json_key: generator_string1_ampere
+          unit_of_meas: "A"
+          ic: mdi:current-ac
+
+        - name: String 2 Strom
+          json_key: generator_string2_ampere
+          unit_of_meas: "A"
+          ic: mdi:current-ac
+
+        - name: String 3 Strom
+          json_key: generator_string3_ampere
+          unit_of_meas: "A"
+          ic: mdi:current-ac
+
+        - name: L1 Spannung AC
+          json_key: generator_output_l1_voltage
+          unit_of_meas: "V"
+          ic: mdi:flash
+
+        - name: L2 Spannung AC
+          json_key: generator_output_l2_voltage
+          unit_of_meas: "V"
+          ic: mdi:flash
+
+        - name: L3 Spannung AC
+          json_key: generator_output_l3_voltage
+          unit_of_meas: "V"
+          ic: mdi:flash
+
+        - name: L1 Leistung
+          json_key: generator_l1_power
+          unit_of_meas: "W"
+          dev_cla: power
+          ic: mdi:solar-power
+
+        - name: L2 Leistung
+          json_key: generator_l2_power
+          unit_of_meas: "W"
+          dev_cla: power
+          ic: mdi:solar-power
+
+        - name: L3 Leistung
+          json_key: generator_l3_power
+          unit_of_meas: "W"
+          dev_cla: power
+          ic: mdi:solar-power
+
+        - name: Gesamt Leistung
+          json_key: generator_gesamtleistung
+          unit_of_meas: "W"
+          dev_cla: power
+          ic: mdi:solar-power
+
+        - name: Leistungsfaktor L1
+          json_key: generator_powerfactor_l1
+          ic: mdi:alpha-p-circle
+
+        - name: Leistungsfaktor L2
+          json_key: generator_powerfactor_l2
+          ic: mdi:alpha-p-circle
+
+        - name: Leistungsfaktor L3
+          json_key: generator_powerfactor_l3
+          ic: mdi:alpha-p-circle
+
+        - name: PV Ost Leistung aktuell
+          json_key: power_actual_pv_ost
+          unit_of_meas: "W"
+          dev_cla: power
+          ic: mdi:solar-power
+
+        - name: PV West Leistung aktuell
+          json_key: power_actual_pv_west
+          unit_of_meas: "W"
+          dev_cla: power
+          ic: mdi:solar-power
+
+        - name: PV Theoretisch Gesamt
+          json_key: power_theoretical_total
+          unit_of_meas: "kW"
+          dev_cla: power
+          ic: mdi:solar-power
+
+        - name: PV Theoretisch Ost
+          json_key: power_theoretical_pv_ost
+          unit_of_meas: "kW"
+          dev_cla: power
+          ic: mdi:solar-power
+
+        - name: PV Theoretisch West
+          json_key: power_theoretical_pv_west
+          unit_of_meas: "kW"
+          dev_cla: power
+          ic: mdi:solar-power
+
+        - name: Sonnenaufgang
+          json_key: power_theoretical_sunrise
+          ic: mdi:weather-sunset-up
+          dev_cla: timestamp
+          ent_cat: "diagnostic"
+
+        - name: Sonnenuntergang
+          json_key: power_theoretical_sunset
+          ic: mdi:weather-sunset-down
+          dev_cla: timestamp
+          ent_cat: "diagnostic"
+
+        - name: Tageslicht Stunden
+          json_key: power_theoretical_daylight_hours
+          unit_of_meas: "h"
+          ic: mdi:weather-sunny
+
+    device:
+      identifiers: ["pico55"]
+      name: "Photovoltaik Module"
+      model: "Solarfabrik Premium L260 Wp mono"
+      manufacturer: "Solarfabrik"
+      sw_version: "2.0.0"
+      configuration_url: "http://10.1.1.80"
