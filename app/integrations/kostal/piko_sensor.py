@@ -256,10 +256,11 @@ class PikoSensor:
             if last_update:
                 last_update_dt = datetime.fromisoformat(last_update)
 
-                if now.hour != last_update_dt.hour:
-                    history["power_hour"] = 0.0
                 if now.day != last_update_dt.day:
                     history["power_day"] = 0.0
+                    last_current = 0.0  # Reset: Delta-Basis ebenfalls auf 0
+                if now.hour != last_update_dt.hour:
+                    history["power_hour"] = 0.0
                 if now.isocalendar()[1] != last_update_dt.isocalendar()[1]:
                     history["power_week"] = 0.0
                 if now.month != last_update_dt.month:
@@ -268,6 +269,17 @@ class PikoSensor:
                     history["power_year"] = 0.0
 
             delta = max(0.0, round(daily_energy - last_current, 2))
+
+            # SPIKE-SCHUTZ: Max. erlaubtes Delta pro Intervall (kWh)
+            # Bei 5 kW Peak und 5-Min-Intervall: max ~0.42 kWh möglich
+            max_delta = deep_get(self.config, "max_delta_kwh", 2.0, as_float=True)
+            if delta > max_delta:
+                self.logger.warning(
+                    f"[SPIKE-SCHUTZ] Delta {delta} kWh blockiert (max: {max_delta}). "
+                    f"daily_energy={daily_energy}, last_current={last_current}"
+                )
+                delta = 0.0
+
             self.logger.debug(f"Delta Energie Wert: {delta}")
 
             for key in ["power_hour", "power_week", "power_month", "power_year"]:
@@ -339,6 +351,33 @@ class PikoSensor:
         result["current_power_kw"] = round(result["current_power"] * 0.001, 2)
         result["total_energy"] = deep_get({"d": data}, "d.1", 0.0, as_float=True)
         result["daily_energy"] = deep_get({"d": data}, "d.2", 0.0, as_float=True)
+
+        # PLAUSIBILITÄTSPRÜFUNG: Werte müssen physikalisch sinnvoll sein
+        max_daily = deep_get(self.config, "max_daily_kwh", 50.0, as_float=True)
+        max_power = deep_get(self.config, "max_power_w", 10000.0, as_float=True)
+
+        if result["daily_energy"] < 0 or result["daily_energy"] > max_daily:
+            self.logger.warning(
+                f"[PLAUSIBILITÄT] daily_energy={result['daily_energy']} kWh "
+                f"außerhalb 0–{max_daily} → verworfen (HTML-Fragment?)"
+            )
+            return None
+
+        if result["current_power"] < 0 or result["current_power"] > max_power:
+            self.logger.warning(
+                f"[PLAUSIBILITÄT] current_power={result['current_power']} W "
+                f"außerhalb 0–{max_power} → verworfen"
+            )
+            return None
+
+        # SPIKE-SCHUTZ: WR liefert alten Tagesertrag bei current_power=0
+        # (typisch beim Aufwachen: daily_energy > 1 kWh aber keine Leistung)
+        if result["daily_energy"] > 1.0 and result["current_power"] == 0:
+            self.logger.warning(
+                f"[SPIKE-SCHUTZ] daily_energy={result['daily_energy']} kWh bei "
+                f"current_power=0 W → WR-Aufwach-Artefakt verworfen"
+            )
+            return None
 
         if result["aktiv"] == "on":
             self.calculate_power_factors()
