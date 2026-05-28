@@ -1,0 +1,58 @@
+{
+  "status": "Einspeisen MPP",
+  "runtime": {
+    "running": "4713 days, 20 hours, 53 minutes and 11 seconds",
+    "days": 4713,
+    "hours": 113132
+  },
+  "theoretical_pv": {
+    "pv_ost": 2.028,
+    "pv_west": 1.632,
+    "total": 3.66,
+    "solar_time": 0.5375,
+    "solar_factor_ost": 0.8916,
+    "solar_factor_west": 0.7173,
+    "energy_ost_kwh": 17.7,
+    "energy_west_kwh": 17.7,
+    "energy_total_kwh": 35.39
+  },
+  "history": {
+    "power_day": 15.4,
+    "power_hour": 0.0,
+    "power_week": 0.0,
+    "power_month": 0.0,
+    "power_year": 0.0,
+    "last_update": "2026-05-28T13:53:11"
+  },
+  "live_data": {
+    "generator": {
+      "status": "Einspeisen MPP",
+      "output_l1_voltage": 234.0,
+      "output_l2_voltage": 231.0,
+      "output_l3_voltage": 230.0,
+      "l1_power": 1055.0,
+      "l2_power": 1044.0,
+      "l3_power": 1028.0,
+      "string1_ampere": 4.61,
+      "string2_ampere": 5.56,
+      "string3_ampere": 0.0,
+      "powerfactor_l1": 0.978,
+      "powerfactor_l2": 0.813,
+      "powerfactor_l3": 0.0,
+      "powerfactor": 0.895,
+      "einspeisedauer_h": 0.0,
+      "analytics": {
+        "total_dc_w": 3257,
+        "inverter_efficiency_pct": 96.0,
+        "apparent_power_va": 3494,
+        "reactive_power_var": 1559,
+        "voltage_avg_v": 231.7,
+        "voltage_unbalance_pct": 1.01,
+        "co2_today_kg": 5.85,
+        "co2_total_kg": 19468.9,
+        "trees_planted": 1557,
+        "weather_factor_pct": 63
+      }
+    }
+  }
+}
