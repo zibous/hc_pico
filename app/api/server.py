@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -80,6 +81,23 @@ def create_app() -> FastAPI:
         root_path=os.environ.get("ROOT_PATH", ""),
     )
 
+    # --- Middleware: CORS + No-Cache für Static Files ---
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
+    @app.middleware("http")
+    async def add_no_cache_headers(request: Request, call_next):
+        response = await call_next(request)
+        if request.url.path.endswith((".html", ".js", ".css")):
+            response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+            response.headers["Pragma"] = "no-cache"
+            response.headers["Expires"] = "0"
+        return response
+
     # Health + AppStatus
     app.include_router(health_router, prefix="/api", tags=["health"])
 
@@ -87,13 +105,21 @@ def create_app() -> FastAPI:
     if (FRONTEND_DIR / "static").exists():
         app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR / "static")), name="static")
 
-    # Dashboard HTML
+    # Dashboard HTML (neues modulares Dashboard)
     @app.get("/", response_class=HTMLResponse)
     async def index():
-        html_file = FRONTEND_DIR / "index.html"
+        html_file = FRONTEND_DIR / "dashboard.html"
         if html_file.exists():
             return FileResponse(str(html_file))
         return HTMLResponse("<h1>Dashboard not found</h1>", status_code=404)
+
+    # Legacy: altes Dashboard unter /v1
+    @app.get("/v1", response_class=HTMLResponse)
+    async def index_v1():
+        html_file = FRONTEND_DIR / "index.html"
+        if html_file.exists():
+            return FileResponse(str(html_file))
+        return HTMLResponse("<h1>Dashboard v1 not found</h1>", status_code=404)
 
     # Payload JSON (live data from controller)
     @app.get("/data/payload.json")
@@ -191,14 +217,38 @@ def create_app() -> FastAPI:
         # Jahr
         year_kwh = round(sum(r["energy_kwh"] for r in _get_history_range(conn, "day", f"{this_year}-01-01", today)), 1)
 
-        # Jahresvergleich
+        # Jahresvergleich (mit fairem Periodenvergleich für laufendes Jahr)
         year_rows = sorted(_get_history(conn, "year", limit=15), key=lambda r: r["period_key"])
         years = []
+
+        # Aktueller Tag im Jahr für fairen Vergleich
+        today_day_str = now.strftime("%m-%d")
+
         for r in year_rows:
             yr = r["period_key"]
-            day_rows = _get_history_range(conn, "day", f"{yr}-01-01", f"{yr}-12-31")
-            kwh = round(sum(d["energy_kwh"] for d in day_rows), 1)
-            years.append({"year": yr, "kwh": kwh})
+            is_current = (yr == this_year)
+
+            if is_current:
+                # Laufendes Jahr: nur bis heute
+                day_rows = _get_history_range(conn, "day", f"{yr}-01-01", today)
+                kwh = round(sum(d["energy_kwh"] for d in day_rows), 1)
+
+                # Gleicher Zeitraum im Vorjahr (Jan 1 bis gleicher Tag)
+                prev_year = str(int(yr) - 1)
+                prev_same_end = f"{prev_year}-{today_day_str}"
+                prev_day_rows = _get_history_range(conn, "day", f"{prev_year}-01-01", prev_same_end)
+                prev_same_period = round(sum(d["energy_kwh"] for d in prev_day_rows), 1)
+
+                years.append({
+                    "year": yr,
+                    "kwh": kwh,
+                    "partial": True,
+                    "prev_same_period": prev_same_period,
+                })
+            else:
+                day_rows = _get_history_range(conn, "day", f"{yr}-01-01", f"{yr}-12-31")
+                kwh = round(sum(d["energy_kwh"] for d in day_rows), 1)
+                years.append({"year": yr, "kwh": kwh})
 
         result = {
             "today_kwh": _kwh("day", today),
