@@ -68,6 +68,9 @@ git-update: ## Git Forgejo Update durchführen
 	git commit -m "Update am $$(date +'%Y-%m-%d %H:%M')" || true
 	git push -u origin main
 
+compare:
+	@docker diff hc_pico 2>/dev/null | grep -E '^[AC]' | awk '{print $$2}' | xargs -I {} docker exec hc_pico sh -c '[ -f "{}" ] && echo "{}"' 2>/dev/null | grep -v "__pycache__" || true
+
 # ---------------------------------------------------------
 # Help
 # ---------------------------------------------------------
