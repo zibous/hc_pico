@@ -68,8 +68,50 @@ git-update: ## Git Forgejo Update durchführen
 	git commit -m "Update am $$(date +'%Y-%m-%d %H:%M')" || true
 	git push -u origin main
 
-compare:
-	@docker diff hc_pico 2>/dev/null | grep -E '^[AC]' | awk '{print $$2}' | xargs -I {} docker exec hc_pico sh -c '[ -f "{}" ] && echo "{}"' 2>/dev/null | grep -v "__pycache__" || true
+compare: ## Vergleicht lokale Dateien mit Container-Inhalt
+	@mkdir -p /tmp/hc_pico_files
+	@docker cp hc_pico:/app/. /tmp/hc_pico_files/
+	@echo "─── Geänderte Dateien ───"
+	@diff -qr --exclude="__pycache__" --exclude="*.pyc" --exclude=".git" \
+		--exclude="data" --exclude="logs" --exclude=".env" --exclude=".ruff_cache" \
+		./ /tmp/hc_pico_files/ 2>/dev/null | sort || true
+	@echo ""
+	@echo "─── Nur lokal (neu/nicht im Container) ───"
+	@diff -qr --exclude="__pycache__" --exclude="*.pyc" --exclude=".git" \
+		--exclude="data" --exclude="logs" --exclude=".env" --exclude=".ruff_cache" \
+		./ /tmp/hc_pico_files/ 2>/dev/null | grep "Nur in \./" | sort || true
+	@echo ""
+	@echo "─── Nur im Container (lokal gelöscht) ───"
+	@diff -qr --exclude="__pycache__" --exclude="*.pyc" --exclude=".git" \
+		--exclude="data" --exclude="logs" --exclude=".env" --exclude=".ruff_cache" \
+		./ /tmp/hc_pico_files/ 2>/dev/null | grep "Nur in /tmp/" | sort || true
+	@rm -rf /tmp/hc_pico_files
+
+diff-detail: ## Zeigt inhaltliche Unterschiede zum Container
+	@mkdir -p /tmp/hc_pico_files
+	@docker cp hc_pico:/app/. /tmp/hc_pico_files/
+	@diff -ur --exclude="__pycache__" --exclude="*.pyc" --exclude=".git" \
+		--exclude="data" --exclude="logs" --exclude=".env" --exclude=".ruff_cache" \
+		/tmp/hc_pico_files/ ./ 2>/dev/null || true
+	@rm -rf /tmp/hc_pico_files
+
+
+# 🔧 Komprimiert JS und CSS parallel über Docker – maximal optimiert
+jsbuild:
+	@echo "📦 Starte JS & CSS Bundling via Docker & esbuild..."
+	@docker run --rm -v "$$(pwd)":/app -w /app node:20-alpine sh -c "\
+		npx esbuild frontend/static/js/main.js --bundle --minify --sourcemap --target=es2020 --outfile=frontend/static/js/main.bundle.js && \
+		npx esbuild frontend/static/css/style.css --minify --sourcemap --outfile=frontend/static/css/style.bundle.css"
+	@echo "✅ Fertig! JS und CSS Bundles wurden erfolgreich im static-Ordner erstellt."
+
+jsclean:
+	@echo "🧼 Bereinige produktive Build-Dateien..."
+	@rm -f frontend/static/js/app.bundle.js
+	@rm -f frontend/static/js/app.bundle.js.map
+	@rm -f frontend/static/css/style.bundle.css
+	@rm -f frontend/static/css/style.bundle.css.map
+	@echo "✨ Verzeichnis ist wieder sauber."
+
 
 # ---------------------------------------------------------
 # Help

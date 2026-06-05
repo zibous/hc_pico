@@ -13,6 +13,7 @@ from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.api.routes.health import router as health_router
+from app.api.routes.kpi import router as kpi_router
 from app.core.config import APP_NAME, APP_VERSION, DB_PATH, KOSTAL_SENSOR, PROJECT_ROOT, PV_ETA, PV_SHIFT_OST, PV_SHIFT_WEST
 
 log = logging.getLogger(__name__)
@@ -100,6 +101,7 @@ def create_app() -> FastAPI:
 
     # Health + AppStatus
     app.include_router(health_router, prefix="/api", tags=["health"])
+    app.include_router(kpi_router, prefix="/api", tags=["kpi"])
 
     # Static files
     if (FRONTEND_DIR / "static").exists():
