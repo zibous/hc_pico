@@ -2,50 +2,50 @@
     "device": "KOSTAL PIKO5.5",
     "deviceid": "PIKO5.5",
     "date": "2026-06-07",
-    "time": "07:36",
-    "current_power": 128.0,
-    "current_power_kw": 0.13,
-    "total_energy": 51196.0,
-    "daily_energy": 0.14,
+    "time": "11:41",
+    "current_power": 2913.0,
+    "current_power_kw": 2.91,
+    "total_energy": 51203.0,
+    "daily_energy": 6.38,
     "total": {
-        "power_day": 0.14,
-        "power_hour": 0.07,
-        "power_week": 0.13,
-        "power_month": 96.77,
-        "power_year": 770.28,
-        "last_update": "2026-06-07T07:36:10"
+        "power_day": 6.38,
+        "power_hour": 2.28,
+        "power_week": 6.37,
+        "power_month": 103.01,
+        "power_year": 776.52,
+        "last_update": "2026-06-07T11:41:26"
     },
     "generator": {
         "status": "Einspeisen MPP",
         "output_l1_voltage": 231.0,
-        "output_l2_voltage": 230.0,
-        "output_l3_voltage": 230.0,
-        "l1_power": 128.0,
-        "l2_power": 0.0,
-        "l3_power": 0.0,
-        "string1_ampere": 0.21,
-        "string2_ampere": 0.24,
+        "output_l2_voltage": 229.0,
+        "output_l3_voltage": 231.0,
+        "l1_power": 975.0,
+        "l2_power": 966.0,
+        "l3_power": 972.0,
+        "string1_ampere": 6.65,
+        "string2_ampere": 0.74,
         "string3_ampere": 0.0,
-        "string1_voltage": 462.0,
-        "string2_voltage": 234.0,
+        "string1_voltage": 432.0,
+        "string2_voltage": 265.0,
         "string3_voltage": 0.0,
-        "powerfactor_l1": 2.639,
-        "powerfactor_l2": 0.0,
+        "powerfactor_l1": 0.635,
+        "powerfactor_l2": 5.7,
         "powerfactor_l3": 0.0,
-        "powerfactor": 2.639,
-        "gesamtleistung": 128.0,
+        "powerfactor": 3.167,
+        "gesamtleistung": 2913.0,
         "einspeisedauer_h": 0.0,
         "analytics": {
-            "total_dc_w": 133,
+            "total_dc_w": 3034,
             "inverter_efficiency_pct": 96.0,
-            "apparent_power_va": 49,
+            "apparent_power_va": 920,
             "reactive_power_var": 0,
             "voltage_avg_v": 230.3,
-            "voltage_unbalance_pct": 0.29,
-            "co2_today_kg": 0.05,
+            "voltage_unbalance_pct": 0.58,
+            "co2_today_kg": 2.42,
             "co2_total_kg": 19468.9,
             "trees_planted": 1557,
-            "weather_factor_pct": 3
+            "weather_factor_pct": 58
         }
     },
     "aktiv": "on",
@@ -54,20 +54,20 @@
     "week": "2026W23",
     "month": "2026-06",
     "year": "2026",
-    "last_update": "2026-06-07T05:36:10+00:00",
+    "last_update": "2026-06-07T09:41:26+00:00",
     "appversion": "2.1.0",
     "dataservice": "docker-services.home-picokostal",
     "runningtime": {
-        "running": "4723 days, 14 hours, 36 minutes and 10 seconds",
+        "running": "4723 days, 18 hours, 41 minutes and 26 seconds",
         "days": 4723,
-        "hours": 113366
+        "hours": 113370
     },
     "power": {
         "theoretical": {
             "pv_ost": 0.0,
             "pv_west": 0.0,
             "total": 0.0,
-            "solar_time": 0.1331,
+            "solar_time": 0.3948,
             "solar_factor_ost": 0.0,
             "solar_factor_west": 0.0,
             "sunrise": "2026-06-07T05:31:00+02:00",
@@ -79,12 +79,12 @@
             "eta": 0.91
         },
         "actual": {
-            "pv_ost": 97.02,
-            "pv_west": 56.16,
-            "total": 153.18
+            "pv_ost": 2872.8,
+            "pv_west": 196.1,
+            "total": 3068.9
         }
     },
     "power_factor_theoretical": 0.0,
     "periode": "2026-06-07",
-    "timestamp": "2026-06-07T05:36:10+00:00"
+    "timestamp": "2026-06-07T09:41:26+00:00"
 }
