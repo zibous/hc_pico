@@ -220,7 +220,12 @@ def create_app() -> FastAPI:
         year_kwh = round(sum(r["energy_kwh"] for r in _get_history_range(conn, "day", f"{this_year}-01-01", today)), 1)
 
         # Jahresvergleich (mit fairem Periodenvergleich für laufendes Jahr)
-        year_rows = sorted(_get_history(conn, "year", limit=15), key=lambda r: r["period_key"])
+        # Alle vorhandenen Jahre aus day-Einträgen ermitteln
+        year_keys_raw = conn.execute("""
+            SELECT DISTINCT substr(period_key, 1, 4) as year_key
+            FROM pv_history WHERE period_type = 'day' ORDER BY year_key
+        """).fetchall()
+        year_rows = [{"period_key": r["year_key"]} for r in year_keys_raw]
         years = []
 
         # Aktueller Tag im Jahr für fairen Vergleich
@@ -361,13 +366,16 @@ def create_app() -> FastAPI:
             rows = [{"period_key": k, "energy_kwh": round(v, 3)} for k, v in sorted(monthly.items())]
         elif period_type == "year":
             from collections import defaultdict
-            year_keys = sorted(_get_history(conn, "year", limit=15), key=lambda r: r["period_key"])
+            # Alle vorhandenen Jahre aus day-Einträgen ermitteln (statt year-Index)
+            all_day_rows = conn.execute("""
+                SELECT period_key, energy_kwh FROM pv_history
+                WHERE period_type = 'day' ORDER BY period_key
+            """).fetchall()
             yearly = defaultdict(float)
-            for r in year_keys:
-                yr = r["period_key"]
-                day_rows = _get_history_range(conn, "day", f"{yr}-01-01", f"{yr}-12-31")
-                yearly[yr] = round(sum(d["energy_kwh"] for d in day_rows), 3)
-            rows = [{"period_key": yr, "energy_kwh": kwh} for yr, kwh in sorted(yearly.items())]
+            for r in all_day_rows:
+                yr = r["period_key"][:4]
+                yearly[yr] += r["energy_kwh"]
+            rows = [{"period_key": yr, "energy_kwh": round(kwh, 3)} for yr, kwh in sorted(yearly.items())]
         else:
             rows = _get_history_range(conn, period_type, from_key, to_key)
 

@@ -23,17 +23,21 @@ def setup_logger(name: str) -> logging.Logger:
         datefmt="%Y-%m-%d %H:%M:%S",
     )
 
-    if os.getenv("LOG_MODE", "console") == "file":
+    log_mode = os.getenv("LOG_MODE", "console").lower()
+
+    if log_mode in ("file", "both"):
         os.makedirs("logs", exist_ok=True)
-        handler = RotatingFileHandler(
+        file_handler = RotatingFileHandler(
             os.getenv("LOG_FILE", "logs/app.log"),
             maxBytes=int(os.getenv("LOG_MAX_BYTES", 1_000_000)),
             backupCount=int(os.getenv("LOG_BACKUP_COUNT", 3)),
             encoding="utf-8",
         )
-    else:
-        handler = logging.StreamHandler()
+        file_handler.setFormatter(formatter)
+        logger.addHandler(file_handler)
 
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
+    if log_mode in ("console", "both"):
+        console_handler = logging.StreamHandler()
+        console_handler.setFormatter(formatter)
+        logger.addHandler(console_handler)
     return logger
