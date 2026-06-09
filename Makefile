@@ -70,7 +70,7 @@ git-update: ## Git Forgejo Update durchführen
 
 # Deine bestehenden Befehle bleiben komplett gleich:
 git-update: ## Git Forgejo Update durchführen
-	git remote set-url origin http://10.1.1.19:3143/peter/hc_pico.git
+	git remote set-url origin http://10.1.1.119:3143/peter/hc_pico.git
 	git add -A
 	git commit -m "Update am $$(date +'%Y-%m-%d %H:%M')" || true
 	git push -u origin main
@@ -80,7 +80,7 @@ git-release: ## Aufruf im Terminal: 'make git-release V=2.1.0'
 		echo "❌ Fehler: Bitte Versionsnummer angeben! Beispiel: make git-release V=2.1.0"; \
 		exit 1; \
 	fi
-	git remote set-url origin http://10.1.1.19:3143/peter/hc_pico.git
+	git remote set-url origin http://10.1.1.119:3143/peter/hc_pico.git
 	git add -A
 	git commit -m "Release-Vorbereitung für v$(V)" || true
 	git push origin main
