@@ -68,6 +68,29 @@ git-update: ## Git Forgejo Update durchführen
 	git commit -m "Update am $$(date +'%Y-%m-%d %H:%M')" || true
 	git push -u origin main
 
+# Deine bestehenden Befehle bleiben komplett gleich:
+git-update: ## Git Forgejo Update durchführen
+	git remote set-url origin http://10.1.1.19:3143/peter/hc_pico.git
+	git add -A
+	git commit -m "Update am $$(date +'%Y-%m-%d %H:%M')" || true
+	git push -u origin main
+
+git-release: ## Aufruf im Terminal: 'make git-release V=2.1.0'
+	@if [ -z "$(V)" ]; then \
+		echo "❌ Fehler: Bitte Versionsnummer angeben! Beispiel: make git-release V=2.1.0"; \
+		exit 1; \
+	fi
+	git remote set-url origin http://10.1.1.19:3143/peter/hc_pico.git
+	git add -A
+	git commit -m "Release-Vorbereitung für v$(V)" || true
+	git push origin main
+	@echo "🍏 Erstelle Git-Tag v$(V) mit aktuellem Zeitstempel..."
+	git tag -a v$(V) -m "Release v$(V) am $$(date +'%Y-%m-%d %H:%M') via Makefile"
+	@echo "⚡ Pushe Tag v$(V) zu Forgejo..."
+	git push origin v$(V)
+	@echo "🎉 Version v$(V) erfolgreich an Forgejo übermittelt! Du kannst das Release jetzt im Browser aktivieren."
+
+
 compare: ## Vergleicht lokale Dateien mit Container-Inhalt
 	@mkdir -p /tmp/hc_pico_files
 	@docker cp hc_pico:/app/. /tmp/hc_pico_files/
@@ -100,7 +123,7 @@ diff-detail: ## Zeigt inhaltliche Unterschiede zum Container
 jsbuild:
 	@echo "📦 Starte JS & CSS Bundling via Docker & esbuild..."
 	@docker run --rm -v "$$(pwd)":/app -w /app node:20-alpine sh -c "\
-		npx esbuild frontend/static/js/main.js --bundle --minify --sourcemap --target=es2020 --outfile=frontend/static/js/main.bundle.js && \
+		npx esbuild frontend/static/js/v2/main.js --bundle --minify --sourcemap --target=es2020 --outfile=frontend/static/js/v2/main.bundle.js && \
 		npx esbuild frontend/static/css/style.css --minify --sourcemap --outfile=frontend/static/css/style.bundle.css"
 	@echo "✅ Fertig! JS und CSS Bundles wurden erfolgreich im static-Ordner erstellt."
 

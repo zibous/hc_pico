@@ -4,7 +4,6 @@
 import os
 from datetime import datetime
 from pathlib import Path
-
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -29,6 +28,7 @@ KOSTAL_SENSOR = {
     "latitude": float(os.getenv("LATITUDE", 47.4577805)),
     "longitude": float(os.getenv("LONGITUDE", 9.6358696)),
     "elevation": float(os.getenv("ELEVATION", 403)),
+    "co2factor": float(os.getenv("CO2FAKTOR", 220)),
     "timezone": os.getenv("TIMEZONE", "Europe/Vaduz"),
     "P_STC": float(os.getenv("PANELPOWER", 5000)),
     "pv_ost": {"P_STC": 2500, "tilt": 45, "azimuth": 90},

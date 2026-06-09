@@ -15,6 +15,75 @@ an Home Assistant.
 - Wirkungsgrad-Berechnung (Actual vs. Theoretical)
 - HA Webhook Notifications
 
+## ANLAGEN-DASHBOARD ARCHITEKTUR & DATENFLUSS
+
+```bash
+
+    +--------------------------------------------------------------------------+
+    |                          BROWSER / FRONTEND (UI)                         |
+    |                                                                          |
+    |   [Dashboard HTML / JS] <---> [Charts / ApexCharts] <---> [Statistiken]  |
+    +--------------------------------------------------------------------------+
+                                      |
+       HTTP Requests (GET)            |             JSON Responses (Validiert)
+       -------------------------------+---------------------------------------
+                                      v
+
+    +--------------------------------------------------------------------------+
+    |                            FASTAPI BACKEND                               |
+    |                                                                          |
+    |  [ Middlewares: CORS / No-Cache ]                                        |
+    |                          |                                               |
+    |                          v                                               |
+    |  [ API Router (app/api/routes/*) ]                                       |
+    |    ├── /api/current   -->  [current_router] ──┐                          |
+    |    ├── /api/summary   -->  [summary_router] ──┼─> (Validierung via       |
+    |    └── /api/chart/*   -->  [chart_router]   ──┘    Pydantic Schemas)     |
+    +--------------------------------------------------------------------------+
+
+                               |
+                               v
+
+    +--------------------------------------------------------------------------+
+    |                         BUSINESS LOGIC SERVICES                          |
+    |                                                                          |
+    |  ┌──────────────────────────────┐  ┌──────────────────────────────────┐  |
+    |  │       CurrentService         │  │          SummaryService          │  |
+    |  │  • Live-Wechselrichter-Status│  │  • Zeitraum: Tag/Woche/Monat/Jahr│  |
+    |  │  • WR-Wirkungsgrad & Verluste│  │  • Fairer Periodenvergleich      │  |
+    |  │  • Netz-Symmetrie (AC Phase) │  │  • Historische CO2-Statistiken   │  |
+    |  │  • Blindleistungs-Analyse    │  └──────────────────────────────────┘  |
+    |  └──────────────────────────────┘                    |                   |
+    |                  |                                   v                   |
+    |                  v                        ┌──────────────────────────┐   |
+    |  ┌──────────────────────────────┐         │       ChartService       │   |
+    |  │     Umwelt- & PV-Physik      │         │  • Intervall-Aggregation │   |
+    |  │  • CO2-Vermeidung (0.22kg)   │         │  • Lückenfüller-Logik    │   |
+    |  │  • Baum-Äquivalente / E-Km   │         │  • Performance Ratio     │   |
+    |  │  • Ost/West String-Ratio     │         └──────────────────────────┘   |
+    |  └──────────────────────────────┘                        |               |
+    +----------------------------------------------------------+---------------+
+                   |                                           |
+                   |                                           v
+                   |                            ┌──────────────────────────┐
+                   |                            │   app.core.solar_model   │
+                   |                            │  (Astronomische Prognose)│
+                   └──────────────────┬────────>│  • Sonnenstandskurve     │
+                                      |         │  • Einstrahlung Ost/West │
+                                      |         └──────────────────────────┘
+                                      v
+    +--------------------------------------------------------------------------+
+    |                            DATEN- & CONFIG-LAYER                         |
+    |                                                                          |
+    |  ┌──────────────────────────────┐        ┌────────────────────────────┐  |
+    |  │       app.core.config        │        │      SQLite Datenbank      │  |
+    |  │  • KOSTAL_SENSOR (P_STC, etc)│        │      (Isoliertes WAL)      │  |
+    |  │  • APP_NAME / APP_VERSION    │        │  • [pv_readings] (Live)    │  |
+    |  │  • DB_PATH                   │        │  • [pv_history]  (Historie)│  |
+    |  └──────────────────────────────┘        └────────────────────────────┘  |
+    +--------------------------------------------------------------------------+
+```
+
 ## Quick Start
 
 ```bash
@@ -121,14 +190,3 @@ location /dashboardpico/ {
 }
 ```
 
-## Migration von v1
-
-Migriert aus `apps_v1/hc_pico` (Flask Dashboard → FastAPI).
-Controller-Logik und PV-Berechnung 1:1 übernommen.
-
-## Hinweise Dashboard
-
-- Trendlinie (blau gestrichelt) wird nur bei **Tag** und **Monat** angezeigt (Design, nicht Bug)
-- Jahresvergleich hat eigenen Trend in den Kacheln (≈ kWh Trend)
-- Theoretische Kurve nur bei Stundenwerten (Sonnenstand-Berechnung)
-- Wirkungsgrad = Produktion / Theoretisch (nur bei Stundenwerten)

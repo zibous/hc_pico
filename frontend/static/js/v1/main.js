@@ -3,8 +3,6 @@ import { setupThemeEngine } from './theme.js';
 import { loadCurrent } from './api.js';
 import { renderChart, renderYearBars, renderChartStats, destroyChart } from './chart-renderer.js';
 import { renderPvTable, exportPvCSV } from './table-renderer.js';
-
-// Neu: Das schlanke Kontroll-Modul importieren
 import { renderDateControls } from './date-controls.js';
 
 let lastChartData = null;
@@ -47,8 +45,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!period) return;
       tabs.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-
-      // Das neue Modul aufrufen und loadChart als Ausführungs-Callback übergeben
       renderDateControls(period, loadChart);
       loadChart(period);
     });

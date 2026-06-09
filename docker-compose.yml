@@ -18,6 +18,7 @@ services:
 
     environment:
       - TZ=Europe/Vaduz
+      - APP_HOSTNAME=nuc2026.sieler.home
 
     healthcheck:
       test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5098/api/health')"]

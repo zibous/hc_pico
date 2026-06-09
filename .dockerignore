@@ -37,6 +37,7 @@ docs/
 testcases/
 todo/
 archiv/
+*.log
 
 # Project / tooling files
 check_result.txt

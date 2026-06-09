@@ -1,0 +1,232 @@
+{
+  "current": {
+    "meta-data": {
+      "servertime": "2026-06-08 um 20:25 Uhr",
+      "apptitle": "home-picokostal",
+      "appversion": "2.1.0",
+      "language": "at-de",
+      "name": "KOSTAL PIKO5.5",
+      "hersteller": "KOSTAL Solar Electric",
+      "image": "static/kostal.png",
+      "laufzeit": "12 Jahre und 345 Tage",
+      "stunden": 56700,
+      "hostname": "nuc2026.sieler.home",
+      "dataservice": "ok"
+    },
+    "timestamp": "2026-06-08T18:24:43+00:00",
+    "date": "2026-06-08",
+    "time": "20:24",
+    "aktiv": "on",
+    "mode": "Einspeisen MPP",
+    "current_power_w": 26,
+    "current_power_kw": 0.03,
+    "daily_energy_kwh": 18.92,
+    "total_energy_kwh": 51239,
+    "pv_ost_w": 26.74,
+    "pv_west_w": 14,
+    "pv_theoretical_kw": 0.012,
+    "gesamtleistung_w": 26,
+    "l1_voltage": 232,
+    "l1_ampere": 0.07,
+    "l1_power": 0,
+    "string1_voltage": 382,
+    "l2_voltage": 234,
+    "l2_ampere": 0.08,
+    "l2_power": 0,
+    "string2_voltage": 175,
+    "l3_voltage": 234,
+    "l3_ampere": 0,
+    "l3_power": 26,
+    "powerfactor": 1,
+    "performance_analysis": {
+      "current_capacity_utilization_percent": 0.5,
+      "daily_target_achievement_percent": 174.5,
+      "specific_yield": {
+        "today_kwh_per_kwp": 3.78,
+        "historical_total_kwh_per_kwp": 10247.8
+      },
+      "string_distribution": {
+        "ost_string1_w": 26.74,
+        "west_string2_w": 14,
+        "share_ost_percent": 65.6,
+        "share_west_percent": 34.4,
+        "utilization_ost_percent": 1.1,
+        "utilization_west_percent": 0.6
+      }
+    },
+    "environmental_balance": {
+      "co2_saved_kg": 11272.58,
+      "co2_saved_tons": 11.273,
+      "tree_years_equivalent": 1127.3,
+      "km_saved_car_electric": 333053.5
+    },
+    "inverter_analysis": {
+      "dc_input_total_w": 40.74,
+      "efficiency_percent": 0,
+      "loss_w": 0
+    },
+    "grid_analysis": {
+      "phase_imbalance_w": 26,
+      "symmetry_status": "perfekt",
+      "apparent_power_va": 0,
+      "reactive_power_var": 0
+    },
+    "historical_averages": {
+      "avg_energy_per_day_kwh": 10.84,
+      "avg_energy_per_hour_kwh": 0.9
+    }
+  },
+  "summary": {
+    "meta-data": {
+      "servertime": "2026-06-08 um 20:25 Uhr",
+      "apptitle": "home-picokostal",
+      "appversion": "2.1.0",
+      "language": "at-de",
+      "name": "KOSTAL PIKO5.5",
+      "hersteller": "KOSTAL Solar Electric",
+      "image": "static/kostal.png",
+      "laufzeit": "12 Jahre und 345 Tage",
+      "stunden": 56700,
+      "dataservice": "ok"
+    },
+    "today_kwh": 18.92,
+    "week_kwh": 18.9,
+    "month_kwh": 138.7,
+    "year_kwh": 1853.7,
+    "years": [
+      {
+        "year": "2013",
+        "kwh": 1228.8
+      },
+      {
+        "year": "2014",
+        "kwh": 4504.8
+      },
+      {
+        "year": "2015",
+        "kwh": 4179.8
+      },
+      {
+        "year": "2016",
+        "kwh": 3903.8
+      },
+      {
+        "year": "2017",
+        "kwh": 3931.5
+      },
+      {
+        "year": "2018",
+        "kwh": 4151.4
+      },
+      {
+        "year": "2019",
+        "kwh": 3905.3
+      },
+      {
+        "year": "2020",
+        "kwh": 3938
+      },
+      {
+        "year": "2021",
+        "kwh": 3900.2
+      },
+      {
+        "year": "2022",
+        "kwh": 4036.5
+      },
+      {
+        "year": "2023",
+        "kwh": 3440.2
+      },
+      {
+        "year": "2024",
+        "kwh": 3426.7
+      },
+      {
+        "year": "2025",
+        "kwh": 4376.9
+      },
+      {
+        "year": "2026",
+        "kwh": 1853.7,
+        "partial": true,
+        "prev_same_period": 1969.7
+      }
+    ],
+    "environmental_balance": {
+      "today": {
+        "kwh": 18.92,
+        "co2_saved_kg": 4.16,
+        "tree_years_equivalent": 0.4,
+        "km_saved_car_electric": 123
+      },
+      "week": {
+        "kwh": 18.9,
+        "co2_saved_kg": 4.16,
+        "tree_years_equivalent": 0.4,
+        "km_saved_car_electric": 122.8
+      },
+      "month": {
+        "kwh": 138.7,
+        "co2_saved_kg": 30.51,
+        "tree_years_equivalent": 3.1,
+        "km_saved_car_electric": 901.5
+      },
+      "year": {
+        "kwh": 1853.7,
+        "co2_saved_kg": 407.81,
+        "tree_years_equivalent": 40.8,
+        "km_saved_car_electric": 12049.1
+      }
+    },
+    "last_update": "2026-06-08T20:25:00"
+  },
+  "chart": {
+    "meta-data": {
+      "servertime": "2026-06-08 um 20:25 Uhr",
+      "apptitle": "home-picokostal",
+      "appversion": "2.1.0",
+      "language": "at-de",
+      "name": "KOSTAL PIKO5.5",
+      "hersteller": "KOSTAL Solar Electric",
+      "image": "static/kostal.png",
+      "laufzeit": "12 Jahre und 345 Tage",
+      "stunden": 56700,
+      "dataservice": "ok"
+    },
+    "period_type": "hour",
+    "labels": [
+      "00:00",
+      "01:00",
+      "02:00",
+      "03:00",
+      "04:00",
+      "05:00",
+      "06:00",
+      "07:00",
+      "08:00",
+      "09:00",
+      "10:00",
+      "11:00",
+      "12:00",
+      "13:00",
+      "14:00",
+      "15:00",
+      "16:00",
+      "17:00",
+      "18:00",
+      "19:00",
+      "20:00",
+      "21:00",
+      "22:00",
+      "23:00"
+    ],
+    "values": [0, 0, 0, 0, 0, 0, 0.16, 0.29, 0.7, 1.55, 1.54, 1.78, 2.46, 2.97, 2.28, 1.61, 1.2, 0.68, 0.13, 0.08, 0.02, 0, 0, 0],
+    "total_kwh": 18.92,
+    "count": 24,
+    "theoretical": [0, 0, 0, 0, 0.023, 0.373, 0.836, 1.592, 2.389, 3.09, 3.667, 4.097, 4.362, 4.451, 4.362, 4.097, 3.667, 3.09, 2.389, 1.592, 0.836, 0.373, 0.023, 0],
+    "efficiency": [null, null, null, null, null, 0, 0.191, 0.182, 0.293, 0.502, 0.42, 0.434, 0.564, 0.667, 0.523, 0.393, 0.327, 0.22, 0.054, 0.05, 0.024, 0, null, null],
+    "theo_daily_kwh": 45.31,
+    "theo_so_far": 44.91
+  }
+}

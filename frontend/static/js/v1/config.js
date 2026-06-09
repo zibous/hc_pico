@@ -1,6 +1,7 @@
 // Base-URL dynamisch aus dem aktuellen Pfad ableiten.
 // Direkt (http://10.1.1.119:5098/): _B = ''
 // Hinter nginx (https://domain/dashboardpico/): _B = '/dashboardpico'
+
 export const _B = (() => {
   const p = window.location.pathname.replace(/\/+$/, '');
   return (p === '' || p === '/index.html' || p === '/dashboard.html') ? '' : p;
