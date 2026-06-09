@@ -35,12 +35,11 @@ def start_dashboard():
 def main():
     log.info("%s v%s starting", APP_NAME, APP_VERSION)
 
-    # Dashboard als Daemon-Thread starten
     dashboard_thread = threading.Thread(target=start_dashboard, daemon=True, name="dashboard")
     dashboard_thread.start()
+
     log.info("Dashboard gestartet auf Port %d", PORT)
 
-    # Controller starten (blockiert bis Ctrl+C)
     controller = Kostalcontroller(intervall=INTERVALL)
     controller.start_automatik()
 

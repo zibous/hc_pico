@@ -2,51 +2,16 @@
 """
 Kostalcontroller
 ================
-
 Dieser Controller dient als zentrale Steuereinheit für das Auslesen eines
 Kostal-Piko-Wechselrichters und das anschließende Veröffentlichen der Daten
-über MQTT. Zusätzlich sendet er regelmäßige Status-/Health-Check-Informationen
-an ein eigenes MQTT-Topic, damit externe Systeme (z. B. Home Assistant,
-Node-RED, Grafana) jederzeit erkennen können, ob der Controller läuft und ob
-die Sensordaten aktuell sind.
-
-Hauptfunktionen
----------------
-
-1. **Sensorabfrage**
-   Der Controller nutzt ein `PikoSensor`-Objekt, um aktuelle Daten vom
-   Wechselrichter abzurufen. Die Daten werden als Dictionary gespeichert und
-   anschließend per MQTT veröffentlicht.
-
-2. **MQTT-Datenübertragung**
-   Alle Sensordaten werden an ein konfiguriertes MQTT-Topic gesendet.
-   Zusätzlich wird ein zweites Topic für Status-/Health-Informationen genutzt.
-   Dieses enthält:
-       - running: ob die Automatik aktiv ist
-       - pico_on: ob der Controller eingeschaltet wurde
-       - last_update: Zeitstempel der letzten erfolgreichen Sensorabfrage
-       - sensor_ok: ob gültige Sensordaten vorliegen
-
-3. **Sofortiger Stop**
-   Die Automatikschleife schläft nicht mehr für die gesamte Intervallzeit,
-   sondern in kleinen Schritten (0.2 s). Dadurch reagiert der Controller
-   praktisch sofort, wenn `stop()` aufgerufen wird.
-
-4. **Fehlerrobustheit**
-   Sensorfehler, MQTT-Fehler und unerwartete Ausnahmen werden abgefangen,
-   geloggt und verhindern nicht den weiteren Betrieb.
-
-5. **Logging**
-   - INFO: kompakte Statusmeldungen
-   - DEBUG: vollständige, formattierte JSON-Ausgabe der Sensordaten
-
-Diese Klasse ist so aufgebaut, dass sie stabil im Dauerbetrieb laufen kann,
-z.B. als Systemd-Service oder in einem Docker-Container.
+über MQTT.
 """
 
+import os
 import time
 from datetime import datetime
 import socket
+import platform
 
 from app.integrations.kostal.piko_sensor import PikoSensor
 from app.core.mqtt import MQTTClient
@@ -59,31 +24,6 @@ from app.services.utillib import flatten_dict
 from app.services.hadiscovery import HADiscoveryGenerator
 from app.services.db_manager import DatabaseManager
 from app.core.webhook import notify_ha
-
-
-def get_system_identity():
-    info: dict[str, str | None] = {"hostname": None, "fqdn": None, "ip": None}
-
-    # Hostname
-    info["hostname"] = socket.gethostname()
-
-    # FQDN (vollständiger Hostname)
-    info["fqdn"] = socket.getfqdn()
-
-    # IP-Adresse ermitteln
-    try:
-        # Liefert Liste aller IPs → wir nehmen die erste brauchbare
-        ips = socket.gethostbyname_ex(info["hostname"])[2]
-        for ip in ips:
-            if not ip.startswith("127."):
-                info["ip"] = ip
-                break
-        if info["ip"] is None:
-            info["ip"] = "127.0.0.1"
-    except Exception:
-        info["ip"] = "unbekannt"
-
-    return info
 
 
 class Kostalcontroller:
@@ -102,7 +42,7 @@ class Kostalcontroller:
         self.running = False
         self.last_update = None
 
-        self.hostinfo = get_system_identity()
+        self.hostinfo = os.getenv("APP_HOSTNAME") or platform.node(),
         self.payloadFile = settings.KOSTAL_SENSOR.get("datafile", "./data/payload.json")
 
         mqtt_cfg = settings.MQTT_SERVER
@@ -120,7 +60,6 @@ class Kostalcontroller:
 
         self.db = DatabaseManager()
 
-        # Webhook-Tracking
         self._sensor_error_sent = False
         self._consecutive_errors = 0
 
@@ -142,14 +81,12 @@ class Kostalcontroller:
         self.logger.debug("Sensoren werden aktualisiert...")
         self.kostal_aus()
         try:
-            # daten publishen
             data = self.kostalpiko.update()
 
             if data is None:
                 self.logger.warning("PikoSensor lieferte keine Daten (None)")
                 self.picodata = {}
                 self._consecutive_errors += 1
-                # Webhook nach 3 aufeinanderfolgenden Fehlern (vermeidet Spam)
                 if self._consecutive_errors >= 3 and not self._sensor_error_sent:
                     notify_ha("sensor_error",
                               message="Wechselrichter nicht erreichbar",
@@ -158,7 +95,6 @@ class Kostalcontroller:
                     self._sensor_error_sent = True
                 return False
             else:
-                # Sensor wieder OK nach Fehler
                 if self._sensor_error_sent:
                     notify_ha("sensor_ok",
                               message="Wechselrichter wieder erreichbar",
@@ -170,11 +106,9 @@ class Kostalcontroller:
                 self.last_update = datetime.now().isoformat()
 
                 if self.payloadFile and self.picodata:
-
                     self.kostal_ein()
 
                     if self.runCount == 0 and settings.HA_DISCOVERY_ON:
-                        # ha discovery erstellen
                         hadiscovery = HADiscoveryGenerator(
                             mqtt_client=self.mqtt,
                             yaml_file=settings.KOSTAL_SENSOR["hadiscovery"],
@@ -186,7 +120,6 @@ class Kostalcontroller:
 
                     savefile(content=self.picodata, filename=self.payloadFile)
 
-                # Datenbank aktualisieren
                 try:
                     rowid = self.db.insert_reading(self.picodata)
                     self.db.upsert_history(self.picodata)
@@ -202,7 +135,6 @@ class Kostalcontroller:
                     self.logger.error("Datenbankfehler: %s", e, exc_info=True)
 
                 self.runCount += 1
-
                 return True
 
         except Exception as e:
@@ -246,7 +178,6 @@ class Kostalcontroller:
         try:
             while self.running:
                 start_time = time.time()
-
                 sensor_ok = self.sensoren_aktualisieren()
 
                 if sensor_ok:
@@ -262,10 +193,8 @@ class Kostalcontroller:
                 else:
                     self.logger.info("Keine Sensordaten verfügbar")
 
-                # Status-Topic senden
                 self.publish_status()
 
-                # Sofortiger Stop durch kurze Sleep-Schritte
                 elapsed = time.time() - start_time
                 remaining = self.intervall - elapsed
 
@@ -281,7 +210,6 @@ class Kostalcontroller:
         finally:
             self.running = False
             self.publish_status()
-            # Tagesübersicht senden
             total = self.picodata.get("total", {})
             if total:
                 notify_ha("daily_summary",
