@@ -1,7 +1,14 @@
 # Makefile for hc_pico (home-picokostal)
 
+# --- 1. DYNAMISCHE PARAMETER & VARIABLEN ---
+PROJECT_NAME = $(notdir $(CURDIR))
+FORGEJO_IP   = 10.1.1.19
+FORGEJO_PORT = 3143
+FORGEJO_USER = peter
+FORGEJO_URL  = http://$(FORGEJO_IP):$(FORGEJO_PORT)/$(FORGEJO_USER)/$(PROJECT_NAME).git
+
 .DEFAULT_GOAL := help
-.PHONY: build up down restart rebuild logs ps run dev install clean backup help
+.PHONY: build up down restart rebuild logs ps run dev install clean backup help jsbuild
 
 # ---------------------------------------------------------
 # Python interpreter (venv preferred, fallback python3)
@@ -62,35 +69,6 @@ backup: ## Backup database
 graph:
 	pyreverse app -o png
 
-git-update: ## Git Forgejo Update durchführen
-	git remote set-url origin http://10.1.1.119:3043/peter/hc_pico.git
-	git add -A
-	git commit -m "Update am $$(date +'%Y-%m-%d %H:%M')" || true
-	git push -u origin main
-
-# Deine bestehenden Befehle bleiben komplett gleich:
-git-update: ## Git Forgejo Update durchführen
-	git remote set-url origin http://10.1.1.119:3043/peter/hc_pico.git
-	git add -A
-	git commit -m "Update am $$(date +'%Y-%m-%d %H:%M')" || true
-	git push -u origin main
-
-git-release: ## Aufruf im Terminal: 'make git-release V=2.1.0'
-	@if [ -z "$(V)" ]; then \
-		echo "❌ Fehler: Bitte Versionsnummer angeben! Beispiel: make git-release V=2.1.0"; \
-		exit 1; \
-	fi
-	git remote set-url origin http://10.1.1.119:3043/peter/hc_pico.git
-	git add -A
-	git commit -m "Release-Vorbereitung für v$(V)" || true
-	git push origin main
-	@echo "🍏 Erstelle Git-Tag v$(V) mit aktuellem Zeitstempel..."
-	git tag -a v$(V) -m "Release v$(V) am $$(date +'%Y-%m-%d %H:%M') via Makefile"
-	@echo "⚡ Pushe Tag v$(V) zu Forgejo..."
-	git push origin v$(V)
-	@echo "🎉 Version v$(V) erfolgreich an Forgejo übermittelt! Du kannst das Release jetzt im Browser aktivieren."
-
-
 compare: ## Vergleicht lokale Dateien mit Container-Inhalt
 	@mkdir -p /tmp/hc_pico_files
 	@docker cp hc_pico:/app/. /tmp/hc_pico_files/
@@ -119,21 +97,62 @@ diff-detail: ## Zeigt inhaltliche Unterschiede zum Container
 	@rm -rf /tmp/hc_pico_files
 
 
-# 🔧 Komprimiert JS und CSS parallel über Docker – maximal optimiert
-jsbuild:
+jsbuild: ## Komprimiert JS und CSS parallel über Docker – maximal optimiert
 	@echo "📦 Starte JS & CSS Bundling via Docker & esbuild..."
+	@cp ../shared/themes/theme.css frontend/static/css/theme.css
 	@docker run --rm -v "$$(pwd)":/app -w /app node:20-alpine sh -c "\
 		npx esbuild frontend/static/js/v2/main.js --bundle --minify --sourcemap --target=es2020 --outfile=frontend/static/js/v2/main.bundle.js && \
-		npx esbuild frontend/static/css/style.css --minify --sourcemap --outfile=frontend/static/css/style.bundle.css"
+		npx esbuild frontend/static/css/style.css --bundle --minify --sourcemap --outfile=frontend/static/css/style.bundle.css"
 	@echo "✅ Fertig! JS und CSS Bundles wurden erfolgreich im static-Ordner erstellt."
 
-jsclean:
+jsclean: ## Komprimiert JS und CSS entfernen
 	@echo "🧼 Bereinige produktive Build-Dateien..."
 	@rm -f frontend/static/js/app.bundle.js
 	@rm -f frontend/static/js/app.bundle.js.map
 	@rm -f frontend/static/css/style.bundle.css
 	@rm -f frontend/static/css/style.bundle.css.map
 	@echo "✨ Verzeichnis ist wieder sauber."
+
+git-status: ## Zeigt die aktuelle Forgejo Server-Verbindung (Remote URL) an
+	@echo "🔍 Überprüfe Git-Remote-Konfiguration..."
+	@if ! git remote get-url origin >/dev/null 2>&1; then \
+		echo "❌ Fehler: 'origin' ist noch nicht eingerichtet!"; \
+		echo "👉 Bitte führe aus: make git-setup"; \
+		exit 1; \
+	fi
+	@URL=$$(git remote get-url origin); \
+	echo "🍏 Forgejo-Server ist aktiv verbunden!" ; \
+	echo "🔗 Aktuelle URL: $$URL"
+
+git-setup: ## Git-Verbindung zum Forgejo-Server automatisch einrichten oder korrigieren
+	@echo "🛠️ Initialisiere Forgejo Server-Verbindung für '$(PROJECT_NAME)'..."
+	@if ! git remote get-url origin >/dev/null 2>&1; then \
+		git remote add origin $(FORGEJO_URL); \
+		echo "🎉 Server-URL erfolgreich neu angelegt!"; \
+	else \
+		git remote set-url origin $(FORGEJO_URL); \
+		echo "🔄 Bestehende Server-URL erfolgreich korrigiert!"; \
+	fi
+	@echo "🔗 Ziel-Adresse: $(FORGEJO_URL)"
+
+git-update: git-status ## Git Forgejo Update durchführen (Normaler Zwischenstand)
+	git add -A
+	git commit -m "Update am $$(date +'%Y-%m-%d %H:%M')" || true
+	git push -u origin main
+
+git-release: git-status ## Neues Versions-Tag automatisch berechnen, erstellen und zu Forgejo pushen
+	git add -A
+	git commit -m "Release-Vorbereitung am $$(date +'%Y-%m-%d %H:%M')" || true
+	git push origin main
+	@LAST_TAG=$$(git describe --tags --abbrev=0 2>/dev/null || echo "v2.1.0"); \
+	NEXT_TAG=$$(echo $$LAST_TAG | awk -F. '{print $$1"."$$2"."$$3+1}'); \
+	echo "🍏 Letzte Version war: $$LAST_TAG"; \
+	echo "⚡ Berechnete neue Version: $$NEXT_TAG"; \
+	echo "📦 Erstelle Git-Tag $$NEXT_TAG mit aktuellem Zeitstempel..."; \
+	git tag -a $$NEXT_TAG -m "Automatisches Release $$NEXT_TAG am $$(date +'%Y-%m-%d %H:%M') via Makefile"; \
+	git push origin $$NEXT_TAG; \
+	echo "🎉 Version $$NEXT_TAG erfolgreich an Forgejo übermittelt!"
+
 
 
 # ---------------------------------------------------------

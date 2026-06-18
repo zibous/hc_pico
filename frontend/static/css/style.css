@@ -1,26 +1,22 @@
 /* frontend/static/css/style.css */
 
 /* --- 1. THEMES & VARIABLES --- */
-:root {
-    --bg-app: #f5f5f7;
-    --bg-card: #ffffff;
-    --text-main: #1d1d1f;
-    --text-sub: #86868b;
-    --border: #e8e8ed;
-    --accent: #0071e3;
-    --green: #34c759;
-    --orange: #ff9500;
+@import "./theme.css";
+
+/* App-spezifische Aliase (Übergang auf zentrales Theme) */
+:root,
+[data-theme="dark"] {
+    --bg-app: var(--bg);
+    --bg-card: var(--surface);
+    --text-main: var(--text);
+    --text-sub: var(--text-muted);
 }
 
-.apple-theme-dark {
-    --bg-app: #000000;
-    --bg-card: #1c1c1e;
-    --text-main: #f5f5f7;
-    --text-sub: #86868b;
-    --border: #2c2c2e;
-    --accent: #2997ff;
-    --green: #30d158;
-    --orange: #ff9f0a;
+[data-theme="light"] {
+    --bg-app: var(--bg);
+    --bg-card: var(--surface);
+    --text-main: var(--text);
+    --text-sub: var(--text-muted);
 }
 
 /* --- 2. GLOBAL & PREMIUM HEADER --- */
@@ -54,7 +50,7 @@ body {
     left: 0;
     width: 100%;
     z-index: 10000;
-    background: rgba(245, 245, 247, 0.75);
+    background: var(--bg-card);
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
@@ -63,7 +59,7 @@ body {
 }
 
 .apple-theme-dark .app-header.frosted-glass {
-    background: rgba(28, 28, 30, 0.75);
+    background: var(--bg-card);
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
 }

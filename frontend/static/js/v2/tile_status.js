@@ -47,7 +47,7 @@ export function updateSunAnimation(currentData) {
         <text x="290" y="45" fill="var(--text-main)" font-size="14" font-weight="700" text-anchor="end">${formatNum(west, 0)} W</text>
 
         <line x1="200" y1="10" x2="200" y2="110" stroke="var(--border)" stroke-width="1.5" stroke-dasharray="3,3"/>
-        <circle cx="${100 + (west_pct * 2.0)}" cy="${west_pct <= 50 ? 110 - (west_pct * 2.0) : 10 + ((west_pct - 50) * 2.0)}" r="6" fill="var(--green)" style="transition: cx 0.8s cubic-bezier(0.4, 0, 0.2, 1), cy 0.8s cubic-bezier(0.4, 0, 0.2, 1); filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));"/>
+        <circle cx="${100 + (west_pct * 2.0)}" cy="${110 - (west_pct <= 50 ? west_pct : (100 - west_pct)) * 2.0}" r="6" fill="var(--green)" style="transition: cx 0.8s cubic-bezier(0.4, 0, 0.2, 1), cy 0.8s cubic-bezier(0.4, 0, 0.2, 1); filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));"/>
       </svg>
 
       <div class="card-body-rows" style="margin-top: 14px; border-top: 1px solid var(--border); padding-top: 14px; width: 100%; display: flex; flex-direction: column; gap: 8px;">

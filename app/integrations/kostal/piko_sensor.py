@@ -153,6 +153,7 @@ class PikoSensor:
         result["generator"] = generator_model.model_dump()
 
         # --- PV Ost/West aus DC-String-Leistung ---
+        # DC1 (String1) = Ost-Dachseite (12 Module), DC2 (String2) = West-Dachseite (11 Module)
         s1_v = generator_model.string1_voltage
         s1_a = generator_model.string1_ampere
         s2_v = generator_model.string2_voltage

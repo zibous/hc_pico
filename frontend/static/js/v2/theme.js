@@ -1,49 +1,42 @@
-// frontend/static/js/v3/theme.js
+// frontend/static/js/v2/theme.js
+
+const STORAGE_KEY = 'apple-dashboard-theme';
 
 /**
- * Initialisiert das Apple-Style Theme (Hell-/Dunkelmodus)
+ * Initialisiert das Theme (Hell-/Dunkelmodus).
+ * Nutzt data-theme Attribut auf <html> für zentrales Theme-System.
  */
 export function initTheme() {
   const toggleBtn = document.getElementById('theme-toggle');
+
+  // Gespeichertes Theme oder System-Preference, Default: dark
+  const saved = localStorage.getItem(STORAGE_KEY);
+  const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const theme = saved || (systemPrefersDark ? 'dark' : 'dark');
+
+  applyTheme(theme);
+
   if (!toggleBtn) return;
 
-  // Gespeichertes Theme auslesen oder Systemeinstellung abfragen
-  const savedTheme = localStorage.getItem('apple-dashboard-theme');
-  const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-  if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
-    document.body.classList.remove('apple-theme-light');
-    document.body.classList.add('apple-theme-dark');
-  } else {
-    document.body.classList.remove('apple-theme-dark');
-    document.body.classList.add('apple-theme-light');
-  }
-
-  updateToggleIcon();
-
-  // Klick-Event für den Button
   toggleBtn.addEventListener('click', () => {
-    if (document.body.classList.contains('apple-theme-dark')) {
-      document.body.classList.remove('apple-theme-dark');
-      document.body.classList.add('apple-theme-light');
-      localStorage.setItem('apple-dashboard-theme', 'light');
-    } else {
-      document.body.classList.remove('apple-theme-dark');
-      document.body.classList.add('apple-theme-dark');
-      localStorage.setItem('apple-dashboard-theme', 'dark');
-    }
-    updateToggleIcon();
-
-    // 🌟 Event triggern, damit installierte Charts ihre Gitterlinien-Farbe updaten
+    const current = document.documentElement.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    applyTheme(next);
+    localStorage.setItem(STORAGE_KEY, next);
     window.dispatchEvent(new Event('themeChanged'));
   });
 }
 
-function updateToggleIcon() {
-  const toggleBtn = document.getElementById('theme-toggle');
-  if (!toggleBtn) return;
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  // Rückwärtskompatibilität: body-Klasse für bestehende CSS-Regeln
+  document.body.classList.remove('apple-theme-dark', 'apple-theme-light');
+  document.body.classList.add(theme === 'dark' ? 'apple-theme-dark' : 'apple-theme-light');
+  updateToggleIcon(theme);
+}
 
-  const isDark = document.body.classList.contains('apple-theme-dark');
-  // Nutzt ein einfaches Sonnen- oder Mond-Textsymbol/Icon im Apple-Button
-  toggleBtn.innerHTML = isDark ? '<span>☀️</span>' : '<span>🌙</span>';
+function updateToggleIcon(theme) {
+  const btn = document.getElementById('theme-toggle');
+  if (!btn) return;
+  btn.innerHTML = theme === 'dark' ? '<span>☀️</span>' : '<span>🌙</span>';
 }
