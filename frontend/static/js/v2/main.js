@@ -41,9 +41,15 @@ async function fetchRealtimeLiveData() {
     if (!response.ok) throw new Error('Live-API-Fehler');
     const data = await response.json();
 
-    // Globaler Header-Zustand
-    document.getElementById('server-time').innerText = data['meta-data'].servertime;
-    document.getElementById('app-title').innerText = data['meta-data'].apptitle;
+    // Globaler Header-Zustand (Zeit)
+    const serverTimeEl = document.getElementById('server-time');
+    if (serverTimeEl) serverTimeEl.innerText = data['meta-data'].servertime;
+
+    // 🌟 FIX: Verhindert das Überschreiben unserer farbigen CSS-Spans im Header!
+    const titleEl = document.getElementById('app-title');
+    if (titleEl && !titleEl.innerHTML.includes('span') && data['meta-data']?.apptitle) {
+      titleEl.innerText = data['meta-data'].apptitle;
+    }
 
     // Obere Kacheln & Dach-Animation live updaten
     renderTiles(data.current, data.summary, data.chart, data['meta-data']);
@@ -75,11 +81,19 @@ function initApp() {
   initTable();
 
   // 🌟 INITIALISIERUNG DES KALENDERS DIREKT IM GRAFIK-KASTEN
-  initDateSelector(document.getElementById('date-selector-container'), (periodType, fromKey, toKey) => {
-      currentPeriod = periodType;
-      dateFrom = fromKey;
-      dateTo = toKey;
-      fetchHistoricalData(); // Lädt sofort die Vergangenheit exklusiv unten
+  const dsContainer = document.getElementById('date-selector-container');
+  if (dsContainer) {
+    initDateSelector(dsContainer, (periodType, fromKey, toKey) => {
+        currentPeriod = periodType;
+        dateFrom = fromKey;
+        dateTo = toKey;
+        fetchHistoricalData(); // Lädt sofort die Vergangenheit exklusiv unten
+    });
+  }
+
+  // 🌟 FIX: Zwingt die Charts zum sofortigen Farbwechsel, wenn im Footer geklickt wird
+  window.addEventListener('themeChanged', () => {
+    fetchHistoricalData();
   });
 
   // Ersten Live-Durchlauf für die Kacheln triggern
@@ -90,7 +104,6 @@ function initApp() {
 }
 
 initApp();
-
 
 // ─── App Info ───────────────────────────────────────────
 console.info(

@@ -7,23 +7,24 @@ const STORAGE_KEY = 'apple-dashboard-theme';
  * Nutzt data-theme Attribut auf <html> für zentrales Theme-System.
  */
 export function initTheme() {
-  const toggleBtn = document.getElementById('theme-toggle');
-
-  // Gespeichertes Theme oder System-Preference, Default: dark
-  const saved = localStorage.getItem(STORAGE_KEY);
+  // Gespeichertes Theme, synchronisiertes health-theme oder System-Preference
+  const saved = localStorage.getItem('health-theme') || localStorage.getItem(STORAGE_KEY);
   const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
   const theme = saved || (systemPrefersDark ? 'dark' : 'dark');
 
   applyTheme(theme);
 
-  if (!toggleBtn) return;
-
-  toggleBtn.addEventListener('click', () => {
-    const current = document.documentElement.getAttribute('data-theme');
-    const next = current === 'dark' ? 'light' : 'dark';
-    applyTheme(next);
-    localStorage.setItem(STORAGE_KEY, next);
-    window.dispatchEvent(new Event('themeChanged'));
+  // 🌟 FIX: Globaler Klick-Abfänger für den neuen Footer-Link registrieren.
+  // Verhindert Abstürze beim Neuaufbau oder Wechsel des HTML-Skeletts!
+  document.addEventListener('click', (event) => {
+    if (event.target && event.target.id === 'themeToggleFooter') {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+      localStorage.setItem(STORAGE_KEY, next);
+      localStorage.setItem('health-theme', next); // Projektweite Synchronisation
+      window.dispatchEvent(new Event('themeChanged'));
+    }
   });
 }
 
@@ -36,7 +37,9 @@ function applyTheme(theme) {
 }
 
 function updateToggleIcon(theme) {
-  const btn = document.getElementById('theme-toggle');
-  if (!btn) return;
-  btn.innerHTML = theme === 'dark' ? '<span>☀️</span>' : '<span>🌙</span>';
+  // 🌟 FIX: Aktualisiert jetzt das neue Footer-Element absolut null-pointer-sicher
+  const btn = document.getElementById('themeToggleFooter');
+  if (btn !== null && btn !== undefined) {
+    btn.innerHTML = theme === 'dark' ? '☀️ Helles Design' : '🌙 Dunkles Design';
+  }
 }
