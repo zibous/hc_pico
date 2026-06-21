@@ -19,29 +19,33 @@
             </div>
         </header>
 
-        <!-- KACHELN- & GRAFIK-GRID (Permanent Echtzeit) -->
-        <main class="dashboard-grid">
-            <div id="tiles-render-bridge" style="display: contents;"></div>
-        </main>
+        <div class="dashboard-container">
 
-        <!-- DIAGRAMME & HISTORIE -->
-        <section class="history-section apple-card">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 4px; flex-wrap: wrap; gap: 12px;">
-              <h2 style="font-size: 15px; font-weight: 700; color: var(--orange); text-transform: uppercase; letter-spacing: 0.5px;">Ertrags- & Prognosediagramm</h2>
-              <div id="date-selector-container"></div>
-            </div>
-            <div class="chart-wrapper"><canvas id="dashboardChart"></canvas></div>
-            <div class="chart-kpis" id="chart-kpi-container" style="display: flex; flex-direction: column; gap: 12px; width: 100%;"></div>
-        </section>
+            <!-- KACHELN- & GRAFIK-GRID (Permanent Echtzeit) -->
+            <main class="dashboard-grid">
+                <div id="tiles-render-bridge" style="display: contents;"></div>
+            </main>
 
-        <!-- CSV TABELLE -->
-        <section class="table-section apple-card">
-            <div class="table-header">
-                <h2>Datenhistorie</h2>
-                <button id="csv-export-btn" class="apple-btn">Exportieren (CSV)</button>
-            </div>
-            <div class="table-wrapper" id="data-table-container"></div>
-        </section>
+            <!-- DIAGRAMME & HISTORIE -->
+            <section class="history-section apple-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 4px; flex-wrap: wrap; gap: 12px;">
+                <h2 style="font-size: 15px; font-weight: 700; color: var(--orange); text-transform: uppercase; letter-spacing: 0.5px;">Ertrags- & Prognosediagramm</h2>
+                <div id="date-selector-container"></div>
+                </div>
+                <div class="chart-wrapper"><canvas id="dashboardChart"></canvas></div>
+                <div class="chart-kpis" id="chart-kpi-container" style="display: flex; flex-direction: column; gap: 12px; width: 100%;"></div>
+            </section>
+
+            <!-- CSV TABELLE -->
+            <section class="table-section apple-card">
+                <div class="table-header">
+                    <h2>Datenhistorie</h2>
+                    <button id="csv-export-btn" class="apple-btn">Exportieren (CSV)</button>
+                </div>
+                <div class="table-wrapper" id="data-table-container"></div>
+            </section>
+
+        </div>
 
         <footer class="app-footer">
             <div class="footer-left">
@@ -107,7 +111,7 @@
         <text x="290" y="45" fill="var(--text-main)" font-size="14" font-weight="700" text-anchor="end">${p(r,0)} W</text>
 
         <line x1="200" y1="10" x2="200" y2="110" stroke="var(--border)" stroke-width="1.5" stroke-dasharray="3,3"/>
-        <circle cx="${100+i*2}" cy="${i<=50?110-i*2:10+(i-50)*2}" r="6" fill="var(--green)" style="transition: cx 0.8s cubic-bezier(0.4, 0, 0.2, 1), cy 0.8s cubic-bezier(0.4, 0, 0.2, 1); filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));"/>
+        <circle cx="${100+i*2}" cy="${110-(i<=50?i:100-i)*2}" r="6" fill="var(--green)" style="transition: cx 0.8s cubic-bezier(0.4, 0, 0.2, 1), cy 0.8s cubic-bezier(0.4, 0, 0.2, 1); filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));"/>
       </svg>
 
       <div class="card-body-rows" style="margin-top: 14px; border-top: 1px solid var(--border); padding-top: 14px; width: 100%; display: flex; flex-direction: column; gap: 8px;">

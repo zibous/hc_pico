@@ -50,6 +50,7 @@ body {
     left: 0;
     width: 100%;
     z-index: 10000;
+    height: 120px;
     background: var(--bg-card);
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
@@ -65,12 +66,13 @@ body {
 }
 
 .header-inner {
+    height: 100%;
     max-width: 1440px;
     margin: 0 auto;
-    padding: 8px 24px;
+    padding: 8px 24px 18px 24px;
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-end;
 }
 
 .brand {
@@ -174,11 +176,17 @@ body {
 }
 
 /* --- 3. GRID & CARD LAYOUT --- */
+.dashboard-container{
+    margin-top: 66px;
+    margin-bottom: 24px;
+    padding: 32px;
+}
+
 .dashboard-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
     gap: 24px;
-    margin: 16px;
+    margin-bottom: 24px;
 }
 
 .apple-card {
@@ -187,6 +195,7 @@ body {
     padding: 22px;
     border: 1px solid var(--border);
     box-shadow: 0 4px 20px rgba(0,0,0,0.015);
+    margin-bottom: 24px;
 }
 
 .health-card-grouped {
@@ -522,4 +531,15 @@ body {
     .dashboard-grid { grid-template-columns: 1fr; }
     .app-header { flex-direction: column; align-items: flex-start; gap: 16px; }
     .app-footer { flex-direction: column; gap: 8px; text-align: center; }
+}
+
+
+.ds-custom input[type="date"]::-webkit-calendar-picker-indicator { 
+    filter: invert(var(--is-dark, 1));
+    cursor: pointer; 
+}
+
+[data-theme="dark"]  .ds-custom input[type="date"]::-webkit-calendar-picker-indicator { 
+    filter: invert(1); 
+    cursor: pointer; 
 }
