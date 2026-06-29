@@ -7,7 +7,7 @@ from datetime import datetime
 from pathlib import Path
 
 from app.core.config import APP_NAME, DB_PATH, KOSTAL_SENSOR, PORT
-from app.schemas.kpi import KpiHero, KpiIndicator, KpiResponse
+from app.schemas.kpi import KpiHero, KpiIndicator, KpiMetric, KpiResponse
 
 logger = logging.getLogger(__name__)
 
@@ -82,6 +82,32 @@ class KpiService:
             current_hour = min(now.hour + 1, 24)
             sparkline_trimmed = sparkline[:current_hour]
 
+            # Monatssumme
+            month_key = now.strftime("%Y-%m")
+            month_row = conn.execute(
+                "SELECT SUM(energy_kwh) as total FROM pv_history "
+                "WHERE period_type='day' AND period_key LIKE ?",
+                (f"{month_key}%",),
+            ).fetchone()
+            month_kwh = round(month_row["total"], 1) if month_row and month_row["total"] else 0
+
+            # Jahressumme
+            year_key = now.strftime("%Y")
+            year_row = conn.execute(
+                "SELECT SUM(energy_kwh) as total FROM pv_history "
+                "WHERE period_type='day' AND period_key LIKE ?",
+                (f"{year_key}%",),
+            ).fetchone()
+            year_kwh = round(year_row["total"], 1) if year_row and year_row["total"] else 0
+
+            # Peak-Leistung heute
+            peak_row = conn.execute(
+                "SELECT MAX(current_power) as peak FROM pv_readings "
+                "WHERE timestamp >= ?",
+                (f"{today} 00:00:00",),
+            ).fetchone()
+            peak_w = int(peak_row["peak"]) if peak_row and peak_row["peak"] else 0
+
             conn.close()
 
             # Status bestimmen
@@ -117,6 +143,12 @@ class KpiService:
                     type="sparkline",
                     values=sparkline_trimmed,
                 ),
+                metrics=[
+                    KpiMetric(label="Aktuell", value=int(current_power_w), unit="W"),
+                    KpiMetric(label="Peak heute", value=peak_w, unit="W"),
+                    KpiMetric(label="Monat", value=month_kwh, unit="kWh"),
+                    KpiMetric(label="Jahr", value=year_kwh, unit="kWh"),
+                ],
             )
 
         except Exception as e:
