@@ -61,26 +61,19 @@ class KpiService:
             ).fetchone()
             day_kwh = day_row["energy_kwh"] if day_row else daily_energy
 
-            # Stundenwerte für Sparkline (heute)
-            hour_rows = conn.execute(
+            # Stundenwerte für Sparkline (heute) — NICHT MEHR VERWENDET
+            # Stattdessen: Tageswerte der letzten 10 Tage für den Barchart
+            from datetime import timedelta
+            days_back = 10
+            day_start = (now - timedelta(days=days_back - 1)).strftime("%Y-%m-%d")
+            day_rows = conn.execute(
                 "SELECT period_key, energy_kwh FROM pv_history "
-                "WHERE period_type='hour' AND period_key BETWEEN ? AND ? "
+                "WHERE period_type='day' AND period_key BETWEEN ? AND ? "
                 "ORDER BY period_key",
-                (f"{today} 00", f"{today} 23"),
+                (day_start, today),
             ).fetchall()
 
-            sparkline = [0.0] * 24
-            for row in hour_rows:
-                # period_key format: "YYYY-MM-DD HH"
-                try:
-                    hour = int(row["period_key"].split(" ")[1])
-                    sparkline[hour] = round(row["energy_kwh"], 2)
-                except (IndexError, ValueError):
-                    pass
-
-            # Nur bis aktuelle Stunde + 1 (rest ist Zukunft)
-            current_hour = min(now.hour + 1, 24)
-            sparkline_trimmed = sparkline[:current_hour]
+            sparkline_trimmed = [round(r["energy_kwh"], 2) for r in day_rows]
 
             # Monatssumme
             month_key = now.strftime("%Y-%m")
