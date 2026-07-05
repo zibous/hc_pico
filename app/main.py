@@ -6,6 +6,7 @@ home-picokostal – Main Entry Point
 Startet den Kostalcontroller und das FastAPI Dashboard parallel.
 """
 
+import signal
 import threading
 
 from app.core.config import APP_NAME, APP_VERSION, HOST, PORT, INTERVALL
@@ -41,6 +42,15 @@ def main():
     log.info("Dashboard gestartet auf Port %d", PORT)
 
     controller = Kostalcontroller(intervall=INTERVALL)
+
+    # Graceful Shutdown bei SIGTERM (Docker stop)
+    def _shutdown(signum, frame):
+        log.info("Signal %d empfangen – stoppe Controller...", signum)
+        controller.stop()
+
+    signal.signal(signal.SIGTERM, _shutdown)
+    signal.signal(signal.SIGINT, _shutdown)
+
     controller.start_automatik()
 
 

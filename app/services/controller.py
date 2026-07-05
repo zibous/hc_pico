@@ -164,6 +164,40 @@ class Kostalcontroller:
         except Exception as e:
             self.logger.error("MQTT Status-Publish fehlgeschlagen: %s", e)
 
+    # ---------------- Webhook KPI Callbacks ----------------
+
+    def build_heartbeat(self):
+        """Liefert HeartbeatKPI Schema für den Publisher."""
+        from app.schemas.webhook_data import HeartbeatKPI
+        total = self.picodata.get("total", {})
+        return HeartbeatKPI(
+            sensor_ok=bool(self.picodata),
+            current_power_w=self.picodata.get("current_power", 0.0),
+            power_day_kwh=total.get("power_day", 0.0),
+            power_month_kwh=total.get("power_month", 0.0),
+            power_year_kwh=total.get("power_year", 0.0),
+            mode=self.picodata.get("mode", "unknown"),
+        )
+
+    def build_daily_summary(self):
+        """Liefert DailySummary Schema bei Tageswechsel."""
+        from app.schemas.webhook_data import DailySummary
+        total = self.picodata.get("total", {})
+        return DailySummary(
+            power_day_kwh=total.get("power_day", 0.0),
+            power_month_kwh=total.get("power_month", 0.0),
+            power_year_kwh=total.get("power_year", 0.0),
+        )
+
+    def build_monthly_summary(self):
+        """Liefert MonthlySummary Schema bei Monatswechsel."""
+        from app.schemas.webhook_data import MonthlySummary
+        total = self.picodata.get("total", {})
+        return MonthlySummary(
+            power_month_kwh=total.get("power_month", 0.0),
+            power_year_kwh=total.get("power_year", 0.0),
+        )
+
     # ---------------- Automatikbetrieb ----------------
 
     def start_automatik(self):
@@ -173,7 +207,16 @@ class Kostalcontroller:
 
         self.running = True
         self.logger.info("Automatik gestartet")
-        notify_ha("app_start", version=settings.APP_VERSION if hasattr(settings, 'APP_VERSION') else "2.0.0")
+        notify_ha("app_start", version=settings.APP_VERSION)
+
+        # Webhook Publisher starten (Heartbeat alle 60s + daily/monthly Summary)
+        from app.core.webhook import WebhookPublisher
+        self._webhook_publisher = WebhookPublisher(
+            build_heartbeat=self.build_heartbeat,
+            build_daily=self.build_daily_summary,
+            build_monthly=self.build_monthly_summary,
+        )
+        self._webhook_publisher.start()
 
         try:
             while self.running:
@@ -209,13 +252,8 @@ class Kostalcontroller:
             notify_ha("error", message=str(e), severity="critical")
         finally:
             self.running = False
+            self._webhook_publisher.stop()
             self.publish_status()
-            total = self.picodata.get("total", {})
-            if total:
-                notify_ha("daily_summary",
-                          power_day=total.get("power_day", 0.0),
-                          power_month=total.get("power_month", 0.0),
-                          power_year=total.get("power_year", 0.0))
             notify_ha("app_stop", message="Controller gestoppt")
             self.db.close()
             self.logger.info("Automatik gestoppt")

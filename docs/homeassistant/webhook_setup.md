@@ -50,14 +50,14 @@ Jeder Webhook sendet automatisch:
 ```json
 {
   "event": "<event_name>",
-  "device": "dishwasher",
+  "device": "home-picokostal",
   "timestamp": "2026-05-02T15:30:00",
   ...weitere Felder
 }
 ```
 
-> **Hinweis**: Das `device`-Feld steht aktuell auf `"dishwasher"` und sollte
-> auf `"picokostal"` geändert werden (in `utils/webhooks.py`).
+> Die YAML-Vorlage mit Automations und Template-Sensoren liegt unter
+> `docs/homeassistant/hc_pico-webhooks.yaml`.
 
 ## 3. automation.yaml – Webhook-Trigger
 

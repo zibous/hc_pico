@@ -1,0 +1,28 @@
+# ═══════════════════════════════════════════════════════════════════════
+# Webhook-Konfiguration für hc_pico
+# ═══════════════════════════════════════════════════════════════════════
+#
+# Steuert: Was wird wann an Home Assistant gesendet?
+# Die Schemas in app/schemas/webhook_data.py definieren die Felder.
+# Der generische Publisher (app/core/webhook.py) liest diese Config.
+#
+# ═══════════════════════════════════════════════════════════════════════
+
+app_id: hc_pico
+interval: 60          # Heartbeat-Intervall in Sekunden
+
+events:
+  heartbeat:
+    enabled: true
+    schema: HeartbeatKPI
+
+  daily_summary:
+    enabled: true
+    schema: DailySummary
+
+  monthly_summary:
+    enabled: true
+    schema: MonthlySummary
+
+  # App-spezifische Events (werden direkt via notify_ha gesendet)
+  # sensor_error, sensor_ok, error, app_start, app_stop
