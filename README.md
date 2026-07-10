@@ -1,4 +1,21 @@
-# home-picokostal (hc_pico)
+# ☀️ home-picokostal (hc_pico)
+
+[![Version](https://img.shields.io/badge/version-2.1.0-blue.svg)](https://github.com/zibous/hc_pico/releases)
+[![License](https://img.shields.io/badge/license-Open%20Source-green.svg)](https://github.com/zibous/hc_pico)
+[![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=fff)](https://python.org)
+[![FastAPI](https://img.shields.io/badge/FastAPI-009485.svg?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![Pydantic](https://img.shields.io/badge/Pydantic-E92063?logo=Pydantic&logoColor=white)](https://docs.pydantic.dev)
+[![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=fff)](https://hub.docker.com)
+[![MQTT](https://img.shields.io/badge/MQTT-660066?logo=mqtt&logoColor=fff)](https://mqtt.org)
+[![Home Assistant](https://img.shields.io/badge/Home%20Assistant-18BCF2?logo=homeassistant&logoColor=fff)](https://www.home-assistant.io)
+[![SQLite](https://img.shields.io/badge/SQLite-%2307405e.svg?logo=sqlite&logoColor=white)](https://sqlite.org)
+[![Chart.js](https://img.shields.io/badge/Chart.js-FF6384?logo=chartdotjs&logoColor=fff)](https://www.chartjs.org)
+[![Jinja2](https://img.shields.io/badge/Jinja2-B41717?logo=jinja&logoColor=fff)](https://jinja.palletsprojects.com)
+[![YAML](https://img.shields.io/badge/YAML-CB171E?logo=yaml&logoColor=fff)](#)
+[![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=000)](#)
+[![CSS](https://img.shields.io/badge/CSS-639?logo=css&logoColor=fff)](#)
+[![Bash](https://img.shields.io/badge/Bash-4EAA25?logo=gnubash&logoColor=fff)](#)
+[![Support author](https://img.shields.io/badge/buy%20me%20a%20coffee-orange.svg)](https://www.buymeacoff.ee/zibous)
 
 Kostal Piko 5.5 Wechselrichter Datenlogger. Pollt den Inverter alle 5 Minuten,
 berechnet theoretische PV-Leistung, speichert in SQLite und publiziert via MQTT
