@@ -4,6 +4,8 @@ Kostal Piko 5.5 Wechselrichter Datenlogger. Pollt den Inverter alle 5 Minuten,
 berechnet theoretische PV-Leistung, speichert in SQLite und publiziert via MQTT
 an Home Assistant.
 
+![Screenshot der Anwendung](./docs/smarthome-kostal-piko.png)
+
 ## Features
 
 - Kostal Piko HTTP Scraping (alle 5 Min)
