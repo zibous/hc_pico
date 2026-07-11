@@ -13,8 +13,7 @@ __pycache__/
 .env
 
 # Daten (nicht ins Repo)
-# data/*.json
-# data/*.db
+data/*.db
 data/*.db-shm
 data/*.db-wal
 
