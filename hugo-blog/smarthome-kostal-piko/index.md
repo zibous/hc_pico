@@ -46,53 +46,16 @@ Die Ost/West-Ausrichtung sorgt für eine breite Erzeugungskurve über den Tag �
 
 Die Anwendung trennt strikt zwischen Datenerfassung (Controller), physikalischer Berechnung (Solar Model) und API-Bereitstellung (FastAPI):
 
-```text
-┌──────────────────────────────────────────────────────────────────────────────┐
-│                     Kostal Piko 5.5 (Web-Interface)                          │
-│                     http://10.1.1.80 (HTTP Scraping)                         │
-└───────────────────────────────┬──────────────────────────────────────────────┘
-                                │ HTTP GET (alle 5 Min)
-                                ▼
-┌──────────────────────────────────────────────────────────────────────────────┐
-│                     Kostalcontroller (Polling-Loop)                          │
-│  1. Wechselrichter abfragen (PikoSensor)                                     │
-│  2. Theoretische Leistung berechnen (Solar Model)                            │
-│  3. Wirkungsgrad berechnen (Actual / Theoretical)                            │
-│  4. SQLite speichern (pv_readings + pv_history)                              │
-│  5. MQTT publizieren (Live-Daten + Status)                                   │
-│  6. Webhook an Home Assistant senden                                         │
-└────────┬─────────────────────────────────────────────────────────────────────┘
-         │
-         ├────────────────────────────────────────────┐
-         │                                            │
-         ▼                                            ▼
-┌──────────────────────────┐            ┌──────────────────────────────────────┐
-│  SQLite DB (WAL-Modus)   │            │  MQTT Broker                         │
-│  ├── pv_readings (Live)  │            │  kostal/data (Live-Leistung)         │
-│  └── pv_history (Tages)  │            │  kostal/status (Online/Offline)      │
-└──────────────┬───────────┘            │  + HA Discovery (Auto-Sensoren)      │
-               │                        └──────────────────┬───────────────────┘
-               ▼                                           │
-┌──────────────────────────────────┐                       ▼
-│  FastAPI Dashboard (Port 5098)   │            ┌──────────────────────────┐
-│                                  │            │  Home Assistant          │
-│  /api/current  (Live-Status)     │            │  • Aktuelle Leistung     │
-│  /api/summary  (Tag/Woche/...)   │            │  • Tagesertrag           │
-│  /api/chart/hour (Stundenwerte)  │            │  • CO2-Vermeidung        │
-│  /api/chart/day  (Tageswerte)    │            │  • Wirkungsgrad          │
-│  /api/chart/month (Monatswerte)  │            └──────────────────────────┘
-│  /api/chart/year (Jahreswerte)   │
-└──────────────────────────────────┘
-         │
-         ▼
-┌──────────────────────────────────────────────────────────┐
-│  Solar Model (Astronomische Berechnung)                  │
-│  • Sonnenaufgang / -untergang                            │
-│  • Deklination + Stundenwinkel                           │
-│  • Theoretische Leistung pro Stunde (Ost + West)         │
-│  • Berücksichtigung: η=0.91, Azimut-Shift, Neigung       │
-└──────────────────────────────────────────────────────────┘
-```
+{{< mermaid >}}
+flowchart TD
+    Piko["Kostal Piko 5.5<br>HTTP Scraping"] -->|"GET alle 5 Min"| Controller["Kostalcontroller (Polling-Loop)"]
+    Controller --> DB["SQLite DB (WAL)<br>pv_readings · pv_history"]
+    Controller --> MQTT["MQTT Broker<br>kostal/data · kostal/status<br>+ HA Discovery"]
+    Controller --> Webhook["Webhook → Home Assistant"]
+    DB --> API["FastAPI Dashboard :5098<br>/api/current · /api/summary<br>/api/chart/*"]
+    MQTT --> HA["Home Assistant<br>Leistung · Ertrag · CO₂ · η"]
+    Controller --> Solar["Solar Model<br>Sonnenstand · Deklination<br>Theoretische Leistung (Ost+West)"]
+{{< /mermaid >}}
 
 ---
 
