@@ -8,10 +8,10 @@ services:
       - "5098:5098"
 
     volumes:
-      - ${PWD}/data:/app/data
-      - ${PWD}/config:/app/config
-      - ${PWD}/frontend:/app/frontend
-      - ${PWD}/logs:/app/logs
+      - ./data:/app/data
+      - ./config:/app/config
+      - ./frontend:/app/frontend
+      - ./logs:/app/logs
 
     env_file:
       - .env
