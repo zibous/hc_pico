@@ -4,6 +4,12 @@
 home-picokostal – Main Entry Point
 ====================================
 Startet den Kostalcontroller und das FastAPI Dashboard parallel.
+
+Copyright © 2026 Peter. All rights reserved.
+
+THIS SOFTWARE IS PROPRIETARY AND CONFIDENTIAL.
+No part of this software may be reproduced, distributed, or transmitted
+in any form or by any means without prior written permission.
 """
 
 import signal
